@@ -150,26 +150,34 @@ Resources:
     Properties:
       Domain: vpc
       InstanceId: !Ref QualifyInstance2
-  # QualifyInstance3:
-  #   Type: AWS::EC2::Instance
-  #   Properties:
-  #     ImageId: ami-0796be4f4814fc3d5
-  #     InstanceType: c5.large
-  #     SecurityGroupIds:
-  #       - !Ref SecurityGroup
-  #     SubnetId: !Ref Subnet
-  #     PrivateIpAddress: "192.168.0.13"
-  #     KeyName: !Ref KeyPairName
-  #     BlockDeviceMappings:
-  #       - DeviceName: /dev/sda1
-  #         Ebs:
-  #           VolumeSize: 20
-  #           VolumeType: gp3
-  #     Tags:
-  #       - Key: Name
-  #         Value: isucon11-qualify-3
-  # QualifyInstanceIP3:
-  #   Type: AWS::EC2::EIP
-  #   Properties:
-  #     Domain: vpc
-  #     InstanceId: !Ref QualifyInstance3
+  QualifyInstance3:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0796be4f4814fc3d5
+      InstanceType: c5.large
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+      SubnetId: !Ref Subnet
+      PrivateIpAddress: "192.168.0.13"
+      KeyName: !Ref KeyPairName
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 20
+            VolumeType: gp3
+      Tags:
+        - Key: Name
+          Value: isucon11-qualify-3
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          GITHUB_USER=${GitHubUsername}
+          mkdir -p /home/isucon/.ssh
+          curl -s https://github.com/$GITHUB_USER.keys >> /home/isucon/.ssh/authorized_keys
+          chown -R isucon:isucon /home/isucon/.ssh
+          chmod 600 /home/isucon/.ssh/authorized_keys
+  QualifyInstanceIP3:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref QualifyInstance3
