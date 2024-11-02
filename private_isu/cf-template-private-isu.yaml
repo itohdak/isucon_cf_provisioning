@@ -19,7 +19,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: '192.168.1.0/24'
+      CidrBlock: '192.168.0.0/24'
       AvailabilityZone: ap-northeast-1a
 
   MyInternetGateway:
@@ -78,7 +78,7 @@ Resources:
       KeyName: !Ref KeyPairName
       ImageId: ami-047fdc2b851e73cad
       SubnetId: !Ref MySubnet
-      PrivateIpAddress: '192.168.1.10'
+      PrivateIpAddress: '192.168.0.11'
       SecurityGroupIds:
         - !Ref MySecurityGroup
       UserData:
@@ -97,7 +97,7 @@ Resources:
       KeyName: !Ref KeyPairName
       ImageId: ami-037be39355baf1f2e
       SubnetId: !Ref MySubnet
-      PrivateIpAddress: '192.168.1.20'
+      PrivateIpAddress: '192.168.0.20'
       SecurityGroupIds:
         - !Ref MySecurityGroup
       UserData:
