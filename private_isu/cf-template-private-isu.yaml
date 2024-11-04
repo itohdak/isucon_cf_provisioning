@@ -81,6 +81,9 @@ Resources:
       PrivateIpAddress: '192.168.0.11'
       SecurityGroupIds:
         - !Ref MySecurityGroup
+      Tags:
+        - Key: Name
+          Value: private-isu
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -100,6 +103,9 @@ Resources:
       PrivateIpAddress: '192.168.0.20'
       SecurityGroupIds:
         - !Ref MySecurityGroup
+      Tags:
+        - Key: Name
+          Value: bench
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
