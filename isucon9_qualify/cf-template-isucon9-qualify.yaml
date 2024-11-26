@@ -6,9 +6,9 @@ Parameters:
   KeyPairName:
     Description: "Amazon EC2 Key Pair"
     Type: AWS::EC2::KeyPair::KeyName
-  GitHubUsername:
-    Description: "GitHub Username for SSH public key"
-    Type: String
+  # GitHubUsername:
+  #   Description: "GitHub Username for SSH public key"
+  #   Type: String
 
 Resources:
   VPC:
@@ -85,11 +85,19 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          GITHUB_USER=${GitHubUsername}
+          github_usernames=(
+            "itohdak"
+            "Kotaro7750"
+            "yakenji"
+          )
           mkdir -p /home/isucon/.ssh
-          curl -s https://github.com/$GITHUB_USER.keys >> /home/isucon/.ssh/authorized_keys
+          for github_username in "${!github_usernames[@]}"; do
+            curl -s https://github.com/$github_username.keys >> /home/isucon/.ssh/authorized_keys
+          done
           chown -R isucon:isucon /home/isucon/.ssh
           chmod 600 /home/isucon/.ssh/authorized_keys
+          sudo /home/isucon/add_hosts.sh 192.168.0.100
+          sudo /etc/nginx/update_cert.sh
   InstanceIP1:
     Type: AWS::EC2::EIP
     Properties:
@@ -116,11 +124,19 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          GITHUB_USER=${GitHubUsername}
+          github_usernames=(
+            "itohdak"
+            "Kotaro7750"
+            "yakenji"
+          )
           mkdir -p /home/isucon/.ssh
-          curl -s https://github.com/$GITHUB_USER.keys >> /home/isucon/.ssh/authorized_keys
+          for github_username in "${!github_usernames[@]}"; do
+            curl -s https://github.com/$github_username.keys >> /home/isucon/.ssh/authorized_keys
+          done
           chown -R isucon:isucon /home/isucon/.ssh
           chmod 600 /home/isucon/.ssh/authorized_keys
+          sudo /home/isucon/add_hosts.sh 192.168.0.100
+          sudo /etc/nginx/update_cert.sh
   InstanceIP2:
     Type: AWS::EC2::EIP
     Properties:
@@ -147,44 +163,58 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          GITHUB_USER=${GitHubUsername}
+          github_usernames=(
+            "itohdak"
+            "Kotaro7750"
+            "yakenji"
+          )
           mkdir -p /home/isucon/.ssh
-          curl -s https://github.com/$GITHUB_USER.keys >> /home/isucon/.ssh/authorized_keys
+          for github_username in "${!github_usernames[@]}"; do
+            curl -s https://github.com/$github_username.keys >> /home/isucon/.ssh/authorized_keys
+          done
           chown -R isucon:isucon /home/isucon/.ssh
           chmod 600 /home/isucon/.ssh/authorized_keys
+          sudo /home/isucon/add_hosts.sh 192.168.0.100
+          sudo /etc/nginx/update_cert.sh
   InstanceIP3:
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc
       InstanceId: !Ref Instance3
-  BenchInstance:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: ami-02cd0768ce7639d01
-      InstanceType: c7a.xlarge
-      SecurityGroupIds:
-        - !Ref SecurityGroup
-      SubnetId: !Ref Subnet
-      PrivateIpAddress: "192.168.0.20"
-      KeyName: !Ref KeyPairName
-      BlockDeviceMappings:
-        - DeviceName: /dev/sda1
-          Ebs:
-            VolumeSize: 40
-            VolumeType: gp3
-      Tags:
-        - Key: Name
-          Value: isucon9-qualify-bench
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          GITHUB_USER=${GitHubUsername}
-          mkdir -p /home/isucon/.ssh
-          curl -s https://github.com/$GITHUB_USER.keys >> /home/isucon/.ssh/authorized_keys
-          chown -R isucon:isucon /home/isucon/.ssh
-          chmod 600 /home/isucon/.ssh/authorized_keys
-  BenchInstanceIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-      InstanceId: !Ref BenchInstance
+        # BenchInstance:
+        #   Type: AWS::EC2::Instance
+        #   Properties:
+        #     ImageId: ami-02cd0768ce7639d01
+        #     InstanceType: c7a.xlarge
+        #     SecurityGroupIds:
+        #       - !Ref SecurityGroup
+        #     SubnetId: !Ref Subnet
+        #     PrivateIpAddress: "192.168.0.20"
+        #     KeyName: !Ref KeyPairName
+        #     BlockDeviceMappings:
+        #       - DeviceName: /dev/sda1
+        #         Ebs:
+        #           VolumeSize: 40
+        #           VolumeType: gp3
+        #     Tags:
+        #       - Key: Name
+        #         Value: isucon9-qualify-bench
+        #     UserData:
+        #       Fn::Base64: !Sub |
+        #         #!/bin/bash
+        #         github_usernames=(
+        #           "itohdak"
+        #           "Kotaro7750"
+        #           "yakenji"
+        #         )
+        #         mkdir -p /home/isucon/.ssh
+        #         for github_username in "${!github_usernames[@]}"; do
+        #           curl -s https://github.com/$github_username.keys >> /home/isucon/.ssh/authorized_keys
+        #         done
+        #         chown -R isucon:isucon /home/isucon/.ssh
+        #         chmod 600 /home/isucon/.ssh/authorized_keys
+        # BenchInstanceIP:
+        #   Type: AWS::EC2::EIP
+        #   Properties:
+        #     Domain: vpc
+        #     InstanceId: !Ref BenchInstance
