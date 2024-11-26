@@ -9,9 +9,9 @@ Parameters:
   SubnetId:
     Description: "AWS EC2 Subnet ID"
     Type: AWS::EC2::Subnet::Id
-  GitHubUsername:
-    Description: "GitHub Username for SSH public key"
-    Type: String
+  # GitHubUsername:
+  #   Description: "GitHub Username for SSH public key"
+  #   Type: String
   ImageId:
     Description: "Image ID (ami-xxxx) of the EC2 instance"
     Type: String
@@ -160,9 +160,15 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          GITHUB_USER=${GitHubUsername}
+          github_usernames=(
+            "itohdak"
+            "Kotaro7750"
+            "yakenji"
+          )
           mkdir -p /home/isucon/.ssh
-          curl -s https://github.com/$GITHUB_USER.keys >> /home/isucon/.ssh/authorized_keys
+          for github_username in "${!github_usernames[@]}"; do
+            curl -s https://github.com/$github_username.keys >> /home/isucon/.ssh/authorized_keys
+          done
           chown -R isucon:isucon /home/isucon/.ssh
           chmod 600 /home/isucon/.ssh/authorized_keys
   PproteinInstanceIP:
