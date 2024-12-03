@@ -25,56 +25,6 @@ Parameters:
     Default: "isuconXX-qualify-pprotein"
 
 Resources:
-  GetAvailabilityZoneFunctionExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Path: "/"
-      Policies:
-        - PolicyName: GetAvailabilityZoneFunctionPolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ec2:DescribeAvailabilityZones
-                Resource: "*"
-  GetAvailabilityZoneFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      Code:
-        ZipFile: |
-          import cfnresponse
-          import boto3
-          def handler(event, context):
-            if event['RequestType'] == "Create":
-              ec2 = boto3.client('ec2')
-              response = ec2.describe_availability_zones(
-                ZoneIds = ['apne1-az1']
-              )
-              ZoneName = response['AvailabilityZones'][0]['ZoneName']
-              cfnresponse.send(event, context, cfnresponse.SUCCESS, {"ZoneName" : ZoneName})
-            elif event['RequestType'] == "Update":
-              cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
-            elif event['RequestType'] == "Delete":
-              cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
-      Handler: index.handler
-      Runtime: python3.9
-      Timeout: 30
-      Role: !GetAtt GetAvailabilityZoneFunctionExecutionRole.Arn
-  GetAvailabilityZone:
-    Type: Custom::PythonLambdaExecution
-    Properties:
-      ServiceToken: !GetAtt GetAvailabilityZoneFunction.Arn
-
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -103,42 +53,6 @@ Resources:
           FromPort: 5000
           ToPort: 5000
           CidrIp: 0.0.0.0/0
-
-  InstanceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - ec2.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Path: "/"
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
-      Policies:
-        - PolicyName: IsuconEC2InstancePolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ec2:DescribeInstances
-                  - ec2:DescribeVolumes
-                  - ec2:DescribeNetworkInterfaces
-                  - ec2:DescribeSecurityGroups
-                  - ec2:DescribeAvailabilityZones
-                Resource: "*"
-  InstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: "/"
-      Roles:
-        - !Ref InstanceRole
-
   PproteinInstance:
     Type: AWS::EC2::Instance
     Properties:
@@ -148,7 +62,6 @@ Resources:
         - !Ref SecurityGroup
       SubnetId: !Ref SubnetId
       PrivateIpAddress: "192.168.0.100"
-      IamInstanceProfile: !Ref InstanceProfile
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
