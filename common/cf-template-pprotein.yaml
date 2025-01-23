@@ -45,13 +45,20 @@ Resources:
           CidrIp: "0.0.0.0/0"
         - IpProtocol: -1
           CidrIp: "192.168.0.0/24"
+        # for pprotein
         - IpProtocol: tcp
           FromPort: 9000
           ToPort: 9000
           CidrIp: 0.0.0.0/0
+        # for ansible
         - IpProtocol: tcp
           FromPort: 5000
           ToPort: 5000
+          CidrIp: 0.0.0.0/0
+        # for jaeger
+        - IpProtocol: tcp
+          FromPort: 16686
+          ToPort: 16686
           CidrIp: 0.0.0.0/0
   PproteinInstance:
     Type: AWS::EC2::Instance
