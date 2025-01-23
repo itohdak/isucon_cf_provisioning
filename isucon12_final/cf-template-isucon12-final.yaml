@@ -101,37 +101,43 @@ Resources:
     Properties:
       Domain: vpc
       InstanceId: !Ref FinalInstance1
-  # FinalInstance2:
-  #   Type: AWS::EC2::Instance
-  #   Properties:
-  #     ImageId: ami-0ecfc02bf3af2d03e
-  #     InstanceType: c5.large
-  #     SecurityGroupIds:
-  #       - !Ref SecurityGroup
-  #     SubnetId: !Ref Subnet
-  #     PrivateIpAddress: "192.168.0.12"
-  #     KeyName: !Ref KeyPairName
-  #     BlockDeviceMappings:
-  #       - DeviceName: /dev/sda1
-  #         Ebs:
-  #           VolumeSize: 20
-  #           VolumeType: gp3
-  #     Tags:
-  #       - Key: Name
-  #         Value: isucon12-final-2
-  #     UserData:
-  #       Fn::Base64: !Sub |
-  #         #!/bin/bash
-  #         GITHUB_USER=${GitHubUsername}
-  #         mkdir -p /home/isucon/.ssh
-  #         curl -s https://github.com/$GITHUB_USER.keys >> /home/isucon/.ssh/authorized_keys
-  #         chown -R isucon:isucon /home/isucon/.ssh
-  #         chmod 600 /home/isucon/.ssh/authorized_keys
-  # FinalInstanceIP2:
-  #   Type: AWS::EC2::EIP
-  #   Properties:
-  #     Domain: vpc
-  #     InstanceId: !Ref FinalInstance2
+  FinalInstance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0ecfc02bf3af2d03e
+      InstanceType: c5.large
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+      SubnetId: !Ref Subnet
+      PrivateIpAddress: "192.168.0.12"
+      KeyName: !Ref KeyPairName
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 20
+            VolumeType: gp3
+      Tags:
+        - Key: Name
+          Value: isucon12-final-2
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          GITHUB_USER=${GitHubUsername}
+          mkdir -p /home/isucon/.ssh
+          curl -s https://github.com/$GITHUB_USER.keys >> /home/isucon/.ssh/authorized_keys
+          chown -R isucon:isucon /home/isucon/.ssh
+          chmod 600 /home/isucon/.ssh/authorized_keys
+          # golang version upgrade
+          sudo add-apt-repository ppa:longsleep/golang-backports -y
+          sudo apt update
+          sudo apt install golang-go -y
+          echo 'export PATH=/usr/lib/go/bin:$PATH' >> ~/.bashrc
+          echo 'export GOROOT=/usr/lib/go' >> ~/.bashrc
+  FinalInstanceIP2:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref FinalInstance2
   # FinalInstance3:
   #   Type: AWS::EC2::Instance
   #   Properties:
@@ -158,6 +164,12 @@ Resources:
   #         curl -s https://github.com/$GITHUB_USER.keys >> /home/isucon/.ssh/authorized_keys
   #         chown -R isucon:isucon /home/isucon/.ssh
   #         chmod 600 /home/isucon/.ssh/authorized_keys
+  #         # golang version upgrade
+  #         sudo add-apt-repository ppa:longsleep/golang-backports -y
+  #         sudo apt update
+  #         sudo apt install golang-go -y
+  #         echo 'export PATH=/usr/lib/go/bin:$PATH' >> ~/.bashrc
+  #         echo 'export GOROOT=/usr/lib/go' >> ~/.bashrc
   # FinalInstanceIP3:
   #   Type: AWS::EC2::EIP
   #   Properties:
